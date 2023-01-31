@@ -47,6 +47,7 @@ const getUserOpts={
 
 const postUserOPts={
     schema:{
+        
         response:{
             201:{
                // type:'array'

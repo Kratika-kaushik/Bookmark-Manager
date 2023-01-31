@@ -2,7 +2,7 @@ const mongoose=require("mongoose")
 const User=require("../Models/Schema")
 
 
-
+////////////////User CRUD//////////////////
 const getUser= async (req, reply) => {
     try {
       const res=await User.find()
@@ -13,8 +13,30 @@ const getUser= async (req, reply) => {
 }
   
 const postUser=async(req,reply)=>{
-    const user= new User(req.body)
-     user.save()
+    try{
+        const phone =req.body.phoneno;
+//console.log(phone)
+        if(!phone){
+             reply.send("Please enter a phone number")
+        }else{
+
+            try{
+                const user=new User(req.body)
+                user.save()
+            }
+            catch(error){
+                console.log("test")
+                reply.send("jnksd")
+            }
+           
+        }
+
+        
+    }catch(error){
+        console.log("outer catch")
+        reply.send(error)
+    }
+  
 }
 
 const updateUser=async (req,reply)=>{
@@ -35,6 +57,16 @@ const deleteUser= async (req,reply)=>{
     const user = await User.findByIdAndRemove(id)
 
     reply.send({message:`User ${id} has been deleted`})
+}
+
+///////////////////////////////////////////////////
+
+
+const insertBookmark= async(req,reply)=>{
+    const phone=req.params.phoneno
+    const url=req.body
+    const{...updateData}=url
+    const addedbookmark= await User.find({phoneno:phone})
 }
 
 module.exports={getUser,postUser, deleteUser,updateUser}
