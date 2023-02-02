@@ -5,10 +5,10 @@ const userSchema=new mongoose.Schema({
                 unique:true,
                 required:true
             },
-     groups:[
+     folder:[
         {
             name:String,
-            url:[{type:String}]
+            url:[String]
         }
      ]
 })

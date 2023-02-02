@@ -14,19 +14,30 @@ const getUser= async (req, reply) => {
   
 const postUser=async(req,reply)=>{
     try{
-        const phone =req.body.phoneno;
-//console.log(phone)
-        if(!phone){
-             reply.send("Please enter a phone number")
+        const {phoneno} =req.body;
+    
+        if(!phoneno){
+            reply.status(404).send('Please enter a phone number');
+
+            // reply.send.status(301).json({"test":"Please enter a phone number"})
         }else{
 
             try{
-                const user=new User(req.body)
-                user.save()
+                const user= await User.findOne({"phoneno":phoneno})
+                if (user == null){
+                    const u=new User(req.body)
+                
+                    u.save()
+                    return
+            }else{
+
+                return reply.status(300).send('Already exists');
+            }
+                
             }
             catch(error){
-                console.log("test")
-                reply.send("jnksd")
+
+                reply.status(404).send('Not Found');
             }
            
         }

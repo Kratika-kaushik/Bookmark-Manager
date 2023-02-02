@@ -1,13 +1,14 @@
-const { getUser,postUser,updateUser, deleteUser}=require('../Controller/controller')
+const { getUser,postUser,updateUser, deleteUser}=require('../Controller/usercontroller')
+const {getfolder,updatefolder,deletefolder}=require('../Controller/foldercontroller')
 const mongoose=require('mongoose')
 const User=require("../Models/Schema")
 
 
 function userRoute(fastify,options,done){
-    fastify.get('/allUsers',getUserOpts)
-
-
     
+    ///////////////USER ROUTES////////////////
+    fastify.get('/allUsers',getUser)
+
     fastify.get('/user/:id',async (req,reply)=>{
         const id = req.params.id
         const user = await User.findById(id)
@@ -16,86 +17,24 @@ function userRoute(fastify,options,done){
     //Post request
 
 
-    fastify.post('/addUser',postUserOPts)
+    fastify.post('/addUser',postUser)
 
-    //Put 
-    fastify.put('/updateUser/:id',updateUserOPts)
+    //Update Request
+    fastify.put('/updateUser/:id',updateUser)
 
     //Delete request
-    fastify.delete('/deleteUser/:id',deleteUserOPts)
+    fastify.delete('/deleteUser/:id',deleteUser)
+
+    /////////////////////////////END USER ROUTES//////////////
+
+    ///////////////////////GROUP ROUTES///////////////
+
+    fastify.get('/:phoneno',getfolder)
+    fastify.put('/:phone/:updatefolder',updatefolder)
+    fastify.delete('/:phone/:name',deletefolder)
 
     done()
 }
 
-const getUserOpts={
-    schema:{
-        response:{
-            200:{
-                type:'array',
-                items:{
-                    type:'object',
-                    properties:{
-                       //id:{type:'string'},
-                        name:{type:'string'}
-                    }
-                }
-            }
-        }
-    },
-    handler: getUser,
-}
 
-const postUserOPts={
-    schema:{
-        
-        response:{
-            201:{
-               // type:'array'
-                    type:'object',
-                    properties:{
-                       //id:{type:'string'},
-                        name:{type:'string'},
-                        phoneno:{type:'integer'}
-                    }
-                
-            }
-        }
-    },
-    handler: postUser,
-}
-
-const updateUserOPts={
-    schema:{
-        response:{
-            200:{
-               // type:'array'
-                    type:'object',
-                    properties:{
-                       //id:{type:'string'},
-                        name:{type:'string'},
-                        phoneno:{type:'integer'}
-                    }
-                
-            }
-        }
-    },
-    handler: updateUser,
-}
-
-const deleteUserOPts={
-    schema:{
-        response:{
-            200:{
-               // type:'array'
-                    type:'object',
-                    properties:{
-                       //id:{type:'string'},
-                        message:{type:'string'}
-                    }
-                
-            }
-        }
-    },
-    handler: deleteUser,
-}
 module.exports=userRoute
