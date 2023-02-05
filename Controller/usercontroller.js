@@ -1,5 +1,5 @@
 const mongoose=require("mongoose")
-const User=require("../Models/Schema")
+const {User,Url}=require("../Models/Schema")
 
 
 ////////////////User CRUD//////////////////
@@ -18,12 +18,10 @@ const postUser=async(req,reply)=>{
     
         if(!phoneno){
             reply.status(404).send('Please enter a phone number');
-
-            // reply.send.status(301).json({"test":"Please enter a phone number"})
         }else{
 
             try{
-                const user= await User.findOne({"phoneno":phoneno})
+                const user= await User.findOne({phoneno:phoneno})
                 if (user == null){
                     const u=new User(req.body)
                 

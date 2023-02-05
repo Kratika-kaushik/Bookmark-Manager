@@ -1,5 +1,6 @@
-const { getUser,postUser,updateUser, deleteUser}=require('../Controller/usercontroller')
-const {getfolder,updatefolder,deletefolder}=require('../Controller/foldercontroller')
+const { getUser, postUser ,updateUser, deleteUser}=require('../Controller/usercontroller')
+const {getfolder,addfolder,deletefolder}=require('../Controller/foldercontroller')
+const {getURLs,postURL,deleteURL}=require('../Controller/urlcontroller')
 const mongoose=require('mongoose')
 const User=require("../Models/Schema")
 
@@ -30,8 +31,14 @@ function userRoute(fastify,options,done){
     ///////////////////////GROUP ROUTES///////////////
 
     fastify.get('/:phoneno',getfolder)
-    fastify.put('/:phone/:updatefolder',updatefolder)
+    fastify.put('/:phone/addfolder',addfolder)
     fastify.delete('/:phone/:name',deletefolder)
+
+    /////////////////////////URL Routes////////////
+
+    fastify.get('/:phone/:name/allURL',getURLs)
+    fastify.post('/:phone/:groupname/newURL',postURL)
+    fastify.delete('/:phone/:groupname/deleteURL/:url',deleteURL)
 
     done()
 }

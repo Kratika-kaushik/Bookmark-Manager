@@ -1,19 +1,12 @@
 const mongoose=require("mongoose")
-const User=require('../Models/Schema')
+const {User, Url}=require('../Models/Schema')
 
 const getfolder=async(req,res)=>{
     try{
-    
-        const  phoneno=req.params.phoneno;
-    
-     const u=await User.findOne({phoneno:phoneno})
-
-     let i=[]
-     u.folder.forEach((item)=>{
-    i.push(item.name)
-      })
-      res.send(i)
-          
+    const phone=req.params.phoneno
+   const u= await User.findOne({phoneno:phone}).populate({path:'folder' ,model:"url"})
+    res.send(u)
+ 
     }catch(err){
         console.error(err)
     }
@@ -21,26 +14,21 @@ const getfolder=async(req,res)=>{
 
 
 
-const updatefolder=async(req,res)=>{
+const addfolder=async(req,res)=>{
     try{
     
         const  phone=req.params.phone;
-        const name=req.params.updatefolder;
- 
-        const updatedname=req.body.name;
-       // console.log(updatedname)
-       const data=await User.findOne({phoneno:phone}) 
-       data.folder.map((item)=>{
-        if(item.name==name){
-            item.name =updatedname
-        }
-       })
-       //console.log(data)
-       res.send(data)
-       data.save()
-       // res.send(u)
-        
-
+        const {foldername}=req.body;
+  
+        const obj=new Url(req.body)
+      
+       const ui=await User.findOne({phoneno:phone})
+       const id=ui._id
+       obj.user=id
+       obj.save()
+       const u=await User.findOneAndUpdate({phoneno:phone},{$push:{folder:obj._id}})
+    u.save()
+       
     }catch(err){
         console.error(err)
     }
@@ -51,25 +39,10 @@ const deletefolder=async(req,res)=>{
     
         const  phoneno=req.params.phone;
         const name=req.params.name;
+        const u=await User.findOne({phoneno:phoneno})
+const id=u._id
 
-    //     const u=await User.findOne({phoneno:phoneno})
-    //    const itemm= u.folder.filter((item)=>(item.name!=name))
-
-      // User.findOneAndUpdate({ phoneno:phoneno }, { $pull: { event: { name: name } } }, { new: true });
-
-//console.log(itemm)
-const updatedUser = await User.findOneAndUpdate(
-
-    phoneno,
-
-    { $pull: { "folder.$.name": name} },
-
-    { new: true }
-
-  );
-
-  res.send({ updatedUser });
-
+ await Url.findOneAndDelete({user:id, foldername:name})
 
 
     }catch(err){
@@ -77,5 +50,5 @@ const updatedUser = await User.findOneAndUpdate(
     }
 }
 
-module.exports={getfolder,updatefolder,deletefolder}
+module.exports={getfolder,addfolder,deletefolder}
 
