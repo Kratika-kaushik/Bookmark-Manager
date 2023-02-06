@@ -7,7 +7,7 @@ const name=req.params.name
 const u=await User.findOne({phoneno:phone})
 const id=u._id
 
-const user=await Url.findOne({user:id})
+const user=await Url.findOne({user:id,foldername:name})
 res.send(user.urls)
 
 }
