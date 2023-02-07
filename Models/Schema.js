@@ -7,7 +7,8 @@ const urlSchema=new mongoose.Schema({
     urls:[String],
     createdAT:{
         type: String
-    }
+    },
+    favourite:Boolean
 }
 
 )

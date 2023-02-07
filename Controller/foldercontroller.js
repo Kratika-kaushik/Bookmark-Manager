@@ -25,7 +25,7 @@ const addfolder=async(req,res)=>{
     let m=moment()
     const varr=m.format("D/M/YYYY");
 
-        const obj=new Url({foldername:foldername,createdAT:varr})
+        const obj=new Url({foldername:foldername,createdAT:varr,favourite:req.body.favourite})
       
        const ui=await User.findOne({phoneno:phone})
        const id=ui._id
@@ -85,10 +85,21 @@ const datesame=async (req,res)=>{
 const varr=u.folder.filter((item)=>{
    return moment(item.createdAT).format("DD-MM-YYYY") == moment(req.body.date).format("DD-MM-YYYY")
 })
-//console.log(u.folder)
+
 res.send(varr)
 
 }
 
-module.exports={getfolder,addfolder,deletefolder,datebefore,dateafter,datesame}
+const favouritefolder=async (req,res)=>{
+    const phone=req.params.phone
+        const u=await User.findOne({phoneno:phone}).populate({path:'folder' ,model:"url"})
+const varr=u.folder.filter((item)=>{
+   return item.favourite
+})
+res.send(varr)
+
+}
+
+
+module.exports={getfolder,addfolder,deletefolder,datebefore,dateafter,datesame,favouritefolder}
 
