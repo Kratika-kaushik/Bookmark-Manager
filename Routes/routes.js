@@ -1,5 +1,5 @@
 const { getUser, postUser ,updateUser, deleteUser}=require('../Controller/usercontroller')
-const {getfolder,addfolder,deletefolder}=require('../Controller/foldercontroller')
+const {getfolder,addfolder,deletefolder,datebefore,dateafter,datesame}=require('../Controller/foldercontroller')
 const {getURLs,postURL,deleteURL}=require('../Controller/urlcontroller')
 const mongoose=require('mongoose')
 const User=require("../Models/Schema")
@@ -31,7 +31,7 @@ function userRoute(fastify,options,done){
     ///////////////////////GROUP ROUTES///////////////
 
     fastify.get('/:phoneno',getfolder)
-    fastify.put('/:phone/addfolder',addfolder)
+    fastify.post('/:phone/addfolder',addfolder)
     fastify.delete('/:phone/:name',deletefolder)
 
     /////////////////////////URL Routes////////////
@@ -39,7 +39,11 @@ function userRoute(fastify,options,done){
     fastify.get('/:phone/:name/allURL',getURLs)
     fastify.post('/:phone/:groupname/newURL',postURL)
     fastify.delete('/:phone/:groupname/deleteURL/:url',deleteURL)
+//////////////////////////////////////////////////////////////////////
 
+fastify.post('/:phone/history/before',datebefore)
+fastify.post('/:phone/history/after',dateafter)
+fastify.post('/:phone/history/between',datesame)
     done()
 }
 

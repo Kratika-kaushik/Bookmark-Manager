@@ -1,11 +1,16 @@
 const mongoose = require("mongoose")
+const moment=require("moment")
 const {ObjectId}=mongoose.Schema
-
 const urlSchema=new mongoose.Schema({
     user:{type:mongoose.SchemaTypes.ObjectId,ref:'User'},
     foldername:String,
-    urls:[String]
-})
+    urls:[String],
+    createdAT:{
+        type: String
+    }
+}
+
+)
 
 const Url=mongoose.model("url",urlSchema)
 
@@ -19,8 +24,7 @@ const userSchema=new mongoose.Schema({
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'url'
      }]
-     
 })
-const User=mongoose.model("user",userSchema)
 
+const User=mongoose.model("user",userSchema)
 module.exports ={ User,Url}

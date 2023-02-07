@@ -1,9 +1,11 @@
 const mongoose=require("mongoose")
 const {User, Url}=require('../Models/Schema')
-
+const moment=require("moment")
 const getfolder=async(req,res)=>{
     try{
     const phone=req.params.phoneno
+    const data=await Url.find()
+    console.log(data)
    const u= await User.findOne({phoneno:phone}).populate({path:'folder' ,model:"url"})
     res.send(u)
  
@@ -18,9 +20,12 @@ const addfolder=async(req,res)=>{
     try{
     
         const  phone=req.params.phone;
-        const {foldername}=req.body;
-  
-        const obj=new Url(req.body)
+        const foldername=req.body.foldername;
+           
+    let m=moment()
+    const varr=m.format("D/M/YYYY");
+
+        const obj=new Url({foldername:foldername,createdAT:varr})
       
        const ui=await User.findOne({phoneno:phone})
        const id=ui._id
@@ -50,5 +55,40 @@ const id=u._id
     }
 }
 
-module.exports={getfolder,addfolder,deletefolder}
+const datebefore=async (req,res)=>{
+    try{
+        const phone=req.params.phone
+        const u=await User.findOne({phoneno:phone}).populate({path:'folder' ,model:"url"})
+const varr=u.folder.filter((item)=>{
+   return moment(item.createdAT).format("DD-MM-YYYY") < moment(req.body.date).format("DD-MM-YYYY")
+})
+res.send(varr)
+    }catch(err){
+        console.log(err)
+    }
+}
+
+const dateafter=async (req,res)=>{
+    const phone=req.params.phone
+        const u=await User.findOne({phoneno:phone}).populate({path:'folder' ,model:"url"})
+const varr=u.folder.filter((item)=>{
+   return moment(item.createdAT).format("DD-MM-YYYY") > moment(req.body.date).format("DD-MM-YYYY")
+})
+//console.log(u.folder)
+res.send(varr)
+
+}
+
+const datesame=async (req,res)=>{
+    const phone=req.params.phone
+        const u=await User.findOne({phoneno:phone}).populate({path:'folder' ,model:"url"})
+const varr=u.folder.filter((item)=>{
+   return moment(item.createdAT).format("DD-MM-YYYY") == moment(req.body.date).format("DD-MM-YYYY")
+})
+//console.log(u.folder)
+res.send(varr)
+
+}
+
+module.exports={getfolder,addfolder,deletefolder,datebefore,dateafter,datesame}
 
