@@ -1,6 +1,10 @@
 const mongoose = require("mongoose")
 const moment=require("moment")
+const bcrypt=require("bcryptjs")
+const jwt=require("jsonwebtoken")
 const {ObjectId}=mongoose.Schema
+
+
 const urlSchema=new mongoose.Schema({
     user:{type:mongoose.SchemaTypes.ObjectId,ref:'User'},
     foldername:String,
@@ -21,11 +25,41 @@ const userSchema=new mongoose.Schema({
                 unique:true,
                 required:true
             },
+    password:{type:String,
+         required:true},
      folder:[{
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'url'
      }]
+    //  tokens:[
+    //     {
+    //         token:{
+    //             type:String
+    //         }
+    //     }
+    //  ]
 })
 
+//BCRYPT
+userSchema.pre('save',async function(next){
+    
+    if(this.isModified('password')){
+        this.password=await bcrypt.hash(this.password,12);
+       
+    }
+    next();
+})
+
+//JWTTOKEN
+// userSchema.methods.generateToken= async function(){
+//     try{
+// let token=jwt.sign({_id:this._id},process.env.SECRET_KEY)   //SECRET_KEY is 32 character long string
+// this.tokens=this.tokens.concat({token:token})
+//await this.save();
+//return token;
+//     }catch(err){
+//         console.log(err)
+//     }
+// }
 const User=mongoose.model("user",userSchema)
 module.exports ={ User,Url}

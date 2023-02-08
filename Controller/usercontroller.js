@@ -1,5 +1,7 @@
 const mongoose=require("mongoose")
 const {User,Url}=require("../Models/Schema")
+const bcrypt=require("bcryptjs")
+//const json=require("jsonwebtoken")
 
 ////////////////User CRUD//////////////////
 const getUser= async (req, reply) => {
@@ -13,7 +15,7 @@ const getUser= async (req, reply) => {
   
 const postUser=async(req,reply)=>{
     try{
-        const {phoneno} =req.body;
+        const {name,phoneno,password} =req.body;
 
         if(!phoneno){
             reply.status(404).send('Please enter a phone number');
@@ -21,14 +23,26 @@ const postUser=async(req,reply)=>{
 
             try{
                 const user= await User.findOne({phoneno:phoneno})
-                if (user == null){
-                    const u=new User(req.body)
+              
             
-                   u.save()
+                if (user == null){
+
+                    const u=new User({name,phoneno,password})
+            
+                   await u.save()
                     return
             }else{
-
-                return reply.status(300).send('Already exists');
+            
+                const isMatch=await bcrypt.compare(password,user.password);
+                console.log(isMatch)
+                if(!isMatch){
+                
+                 reply.status(300).send('Invalid ');}
+                else {
+                 reply.status(300).send('Login successful');
+                }
+              // const token=await u.generateAuthToken()
+            
             }
                 
             }

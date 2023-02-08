@@ -96,6 +96,7 @@ const favouritefolder=async (req,res)=>{
 const varr=u.folder.filter((item)=>{
    return item.favourite
 })
+
 res.send(varr)
 
 }
