@@ -1,7 +1,39 @@
 const mongoose=require("mongoose")
 const {User,Url}=require("../Models/Schema")
 const bcrypt=require("bcryptjs")
-//const json=require("jsonwebtoken")
+const json=require("jsonwebtoken")
+
+//////////////LOGIN////////////
+
+const loginNewUser=async(req,res)=>{
+try{
+const {name,phoneno,password}=req.body
+const user= await User.findOne({phoneno:phoneno})
+if(!user){
+    res.send("Invalid credentials")
+}else{
+       const isMatch=await bcrypt.compare(password,user.password);
+       const token=await user.generateAuthToken()
+       console.log(token)
+       const verifyUser=json.verify(token,process.env.SECRET_KEY);
+       console.log(verifyUser)
+        if(!isMatch){
+            res.status(300).send('Invalid credentials');
+        }
+           else {
+            
+              const u= await User.findOne({_id:verifyUser._id})
+            res.status(300).send(u);
+           }
+      
+           
+        
+   }
+}catch(err){
+    res.status(300).send(err)
+}
+}
+
 
 ////////////////User CRUD//////////////////
 const getUser= async (req, reply) => {
@@ -12,8 +44,18 @@ const getUser= async (req, reply) => {
       console.error(err)
     }
 }
+const getSingleUser=async(req,reply)=>{
+try{
+        const phone= req.params.phone
+        const user = await User.findOne({phoneno:phone}).populate({path:'folder',model:'url'})
+        reply.send(user)
+}catch(err){
+    console.log(err)
+}
+    
+}
   
-const postUser=async(req,reply)=>{
+const signInUser=async(req,reply)=>{
     try{
         const {name,phoneno,password} =req.body;
 
@@ -26,22 +68,25 @@ const postUser=async(req,reply)=>{
               
             
                 if (user == null){
+                    if(!password){
+                        reply.status(300).send("Please enter a password")
+                    }else{
 
                     const u=new User({name,phoneno,password})
-            
+                    var passwordcheck=/^(?=.*[0-9])(?=.*[!@#$%&*])[a-zA-Z0-9!@#$%^&*]{8,16}$/
+                    if(!passwordcheck.test(password)){
+                        reply.status(300).send("Please enter a valid password. It must contain atleast a digit and special character must be 8 chracters long")
+                    }else{
+                        // const token=await u.generateAuthToken()
+                        // reply.cookie("jwt",token);
                    await u.save()
-                    return
+                    reply.status(400).send("Signed In Successfully")
+                    }
+                    }
             }else{
             
-                const isMatch=await bcrypt.compare(password,user.password);
-                console.log(isMatch)
-                if(!isMatch){
-                
-                 reply.status(300).send('Invalid ');}
-                else {
-                 reply.status(300).send('Login successful');
-                }
-              // const token=await u.generateAuthToken()
+         
+            reply.status(300).send("User already exists please login.")
             
             }
                 
@@ -63,26 +108,26 @@ const postUser=async(req,reply)=>{
 
 const updateUser=async (req,reply)=>{
     try {
-        const id = req.params.id
-        console.log(user)
-       const u=await User.findOneAndUpdate({phoneno:id},req.body,{new:true})
+        const phone = req.params.phone
+        //console.log(user)
+       const u=await User.findOneAndUpdate({phoneno:phone},req.body,{new:true})
        
         reply.send(u)
       } catch (err) {
-    console.error(error)
+    console.error("Please check your data")
       }
     
 }
 
 const deleteUser= async (req,reply)=>{
-    const id = req.params.id
+    const phone= req.params.phone
     const user = await User.findOneAndDelete(
-        {phoneno:id}
+        {phoneno:phone}
     )
 
-    reply.send({message:`User ${id} has been deleted`})
+    reply.send("Deleted");
 }
 
 ///////////////////////////////////////////////////
 
-module.exports={getUser,postUser, deleteUser,updateUser}
+module.exports={getUser,getSingleUser, deleteUser,updateUser,loginNewUser,signInUser}

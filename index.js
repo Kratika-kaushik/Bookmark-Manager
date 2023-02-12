@@ -4,8 +4,13 @@ const {MongoClient}= require("mongodb");
 const uri=process.env.DATABASE
 const moment=require("moment")
 const fastify=require('fastify')({logger:true})
-fastify.register(require('./Routes/routes'))
+
 const client =new MongoClient(uri);
+const swaggerConfig = require("./swagger")
+
+fastify.register(require('@fastify/swagger'), swaggerConfig)
+fastify.register(require('@fastify/swagger-ui'))
+fastify.register(require('./Routes/routes'))
 
 async function connect(){
     try{
@@ -18,6 +23,7 @@ async function connect(){
     }
 }
 connect();
+
 
 
 

@@ -1,3 +1,4 @@
+require('dotenv').config();
 const mongoose = require("mongoose")
 const moment=require("moment")
 const bcrypt=require("bcryptjs")
@@ -30,14 +31,15 @@ const userSchema=new mongoose.Schema({
      folder:[{
         type: mongoose.SchemaTypes.ObjectId,
         ref: 'url'
-     }]
-    //  tokens:[
-    //     {
-    //         token:{
-    //             type:String
-    //         }
-    //     }
-    //  ]
+     }],
+     tokens:[
+        {
+            token:{
+                type:String,
+                required:true
+            }
+        }
+     ]
 })
 
 //BCRYPT
@@ -51,15 +53,15 @@ userSchema.pre('save',async function(next){
 })
 
 //JWTTOKEN
-// userSchema.methods.generateToken= async function(){
-//     try{
-// let token=jwt.sign({_id:this._id},process.env.SECRET_KEY)   //SECRET_KEY is 32 character long string
-// this.tokens=this.tokens.concat({token:token})
-//await this.save();
-//return token;
-//     }catch(err){
-//         console.log(err)
-//     }
-// }
+userSchema.methods.generateAuthToken= async function(){
+    try{
+let token=jwt.sign({_id:this._id.toString()},process.env.SECRET_KEY)   //SECRET_KEY is 32 character long string
+this.tokens=this.tokens.concat({token:token});
+await this.save();
+return token;
+    }catch(err){
+        console.log(err)
+    }
+}
 const User=mongoose.model("user",userSchema)
 module.exports ={ User,Url}
