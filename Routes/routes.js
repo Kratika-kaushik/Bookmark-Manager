@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 const User = require("../Models/Schema")
 const { getUsersOpts , getUserOpts , signInUserOpts,loginNewUserOpts,updateUserOpts,deleteUserOpts} = require('./handler')
 const { getfolderOpts, addfolderOpts, deletefolderOpts, datebeforeOpts, dateafterOpts, datesameOpts, favouritefolderOpts } = require('./handler')
-const { getURLs, postURL, deleteURL } = require('../Controller/urlcontroller')
+const { getURLsOpts, postURLOpts, deleteURLOpts } = require('./handler')
 
 
 
@@ -29,15 +29,15 @@ function userRoute(fastify, options, done) {
 
     ///////////////////////GROUP ROUTES///////////////
 
-    fastify.get('/:phoneno', getfolderOpts)
+    fastify.get('/:phone', getfolderOpts)
     fastify.post('/:phone/addfolder', addfolderOpts)
     fastify.delete('/:phone/:name', deletefolderOpts)
     fastify.get('/:phone/favourite', favouritefolderOpts)
     /////////////////////////URL Routes////////////
 
-    fastify.get('/:phone/:name/allURL', getURLs)
-    fastify.post('/:phone/:groupname/newURL', postURL)
-    fastify.delete('/:phone/:groupname/deleteURL/:url', deleteURL)
+    fastify.get('/:phone/:name/allURL', getURLsOpts)
+    fastify.post('/:phone/:groupname/newURL', postURLOpts)
+    fastify.delete('/:phone/:name/deleteURL/:url', deleteURLOpts)
     //////////////////////////////////////////////////////////////////////
 
     fastify.post('/:phone/history/before', datebeforeOpts)
