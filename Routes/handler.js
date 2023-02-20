@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 const { getUser, getSingleUser, updateUser, deleteUser, loginNewUser, signInUser } = require('../Controller/usercontroller')
-const { getfolder, addfolder, deletefolder, datebefore, dateafter, datesame, favouritefolder } = require('../Controller/foldercontroller')
-const {getURLs,postURL,deleteURL}=require('../Controller/urlcontroller')
+const { getfolder, addfolder, deletefolder, date, favouritefolder } = require('../Controller/foldercontroller')
+const { getURLs, postURL, deleteURL } = require('../Controller/urlcontroller')
 const USER = {
 
     type: 'object',
@@ -17,6 +17,7 @@ const FOLDER = {
         name: { type: 'string' },
         //phone:{type:'number'},
         urls: { type: 'array' }
+        //createdAt:{type:'date'}
     }
 }
 
@@ -47,17 +48,19 @@ const getUserOpts = {
             }
         },
         response: {
-            200:  {description: "OK",
-            type: 'object',
-            properties: {
-                name: { type: 'string' },
-                phone: { type: 'number' },
-                folder: {
-                    type: 'array',
-                    items: FOLDER
-                }
+            200: {
+                description: "OK",
+                type: 'object',
+                properties: {
+                    name: { type: 'string' },
+                    phone: { type: 'number' },
+                    folder: {
+                        type: 'array',
+                        items: FOLDER
+                    }
+                },
             },
-        },},
+        },
         tags: ['Users'],
     },
 
@@ -227,7 +230,7 @@ const getfolderOpts = {
                         type: 'array',
                         items: FOLDER
                     }
-                }
+                },
             },
         },
         tags: ['Folders'],
@@ -324,51 +327,10 @@ const favouritefolderOpts = {
 
     handler: favouritefolder
 }
-const dateafterOpts = {
-    schema: {
-        summary: 'Folder created after a particular date',
-        params: {
-            description: '  User phonenumber',
-            type: 'object',
-            properties: {
-                phone: { type: 'number' }
-            }
-        },
-        body: {
-        
-                type: 'object',
-                required: ['date'],
-                properties: {
-                    date: {
-                        type: 'string',
-                        description: 'Enter the date'
-                    }
-                },
-            
-        },
-        response: {
-            200: {
-                description: "OK",
-                type: 'array',
 
-                items: {
-                    type: 'object',
-                    properties: {
-                        name: { type: 'string' },
-                        urls: { type: 'array' },
-                        createdAt: { type: 'string' }
-                    }
-                }
-            },
-        },
-        tags: ['Folders'],
-    },
-
-    handler: dateafter
-}
-const datebeforeOpts = {
+const dateOpts = {
     schema: {
-        summary: 'Folder created before a particular date',
+        summary: 'Folders created on and after a given date',
         params: {
             description: '  User phonenumber',
             type: 'object',
@@ -376,14 +338,14 @@ const datebeforeOpts = {
                 phone: { type: 'number' }
             },
         },
-        body: {
+        query: {
+            description: '  User phonenumber',
             type: 'object',
-            required: ['date'],
             properties: {
-                date: {
-                    type: 'string',
-                    description: 'Enter the date'
-                }
+                
+                start: { type: 'string' },
+                end: { type: 'string' },
+                
             },
         },
         response: {
@@ -395,8 +357,8 @@ const datebeforeOpts = {
                     type: 'object',
                     properties: {
                         name: { type: 'string' },
-                        urls: { type: 'array' },
-                        createdAt: { type: 'string' }
+                        urls: { type: 'array' }
+                        //createdAt: { type: 'string' }
                     }
                 }
             },
@@ -404,49 +366,10 @@ const datebeforeOpts = {
         tags: ['Folders'],
     },
 
-    handler: datebefore
+    handler: date
 }
-const datesameOpts = {
-    schema: {
-        summary: 'Folder created on the same date',
-        params: {
-            description: '  User phonenumber',
-            type: 'object',
-            properties: {
-                phone: { type: 'number' }
-            }
-        },
-        body: {
-            type: 'object',
-            required: ['date'],
-            properties: {
-                date: {
-                    type: 'string',
-                    description: 'Enter the date'
-                }
-            },
-        },
-        response: {
-            200: {
-                description: "OK",
-                type: 'array',
 
-                items: {
-                    type: 'object',
-                    properties: {
-                        name: { type: 'string' },
-                        urls: { type: 'array' },
-                        createdAt: { type: 'string' }
-                    }
-                }
-            },
-        },
-        tags: ['Folders'],
-    },
-
-    handler: datesame
-}
-const getURLsOpts={
+const getURLsOpts = {
     schema: {
         summary: 'Get all URLs',
         params: {
@@ -454,7 +377,7 @@ const getURLsOpts={
             type: 'object',
             properties: {
                 phone: { type: 'number' },
-                name:{type:'string'}
+                name: { type: 'string' }
             }
         },
         response: {
@@ -468,11 +391,11 @@ const getURLsOpts={
             },
         },
         tags: ['URLs'],
-},
-handler:getURLs,
+    },
+    handler: getURLs,
 }
 
-const postURLOpts={
+const postURLOpts = {
     schema: {
         summary: 'Add URL to a Folder',
         params: {
@@ -480,7 +403,7 @@ const postURLOpts={
             type: 'object',
             properties: {
                 phone: { type: 'number' },
-                groupname:{type:'string'}
+                groupname: { type: 'string' }
             }
         },
         body: {
@@ -506,17 +429,17 @@ const postURLOpts={
     handler: postURL
 }
 
-const deleteURLOpts={
+const deleteURLOpts = {
     schema: {
         summary: 'Delete a URL',
         params: {
             description: '  User phonenumber and folder and url name',
             type: 'object',
-            required: ['phone', 'name','url'],
+            required: ['phone', 'name', 'url'],
             properties: {
                 phone: { type: 'number' },
                 name: { type: 'string' },
-                url:{type:'string'}
+                url: { type: 'string' }
             }
         },
         response: {
@@ -533,6 +456,6 @@ const deleteURLOpts={
 
 module.exports = {
     getUsersOpts, getUserOpts, signInUserOpts, deleteUserOpts, updateUserOpts, loginNewUserOpts,
-    getfolderOpts, addfolderOpts, deletefolderOpts, favouritefolderOpts, dateafterOpts, datebeforeOpts, datesameOpts,
+    getfolderOpts, addfolderOpts, deletefolderOpts, favouritefolderOpts, dateOpts,
     getURLsOpts, postURLOpts, deleteURLOpts
 }

@@ -11,7 +11,7 @@ const urlSchema = new mongoose.Schema({
     name: String,
     urls: [String],
     createdAT: {
-        type: String
+        type: Date
     },
     favourite: Boolean
 }

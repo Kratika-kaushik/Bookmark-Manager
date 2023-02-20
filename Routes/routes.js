@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 const User = require("../Models/Schema")
 const { getUsersOpts , getUserOpts , signInUserOpts,loginNewUserOpts,updateUserOpts,deleteUserOpts} = require('./handler')
-const { getfolderOpts, addfolderOpts, deletefolderOpts, datebeforeOpts, dateafterOpts, datesameOpts, favouritefolderOpts } = require('./handler')
+const { getfolderOpts, addfolderOpts, deletefolderOpts, dateOpts, favouritefolderOpts } = require('./handler')
 const { getURLsOpts, postURLOpts, deleteURLOpts } = require('./handler')
 
 
@@ -40,9 +40,7 @@ function userRoute(fastify, options, done) {
     fastify.delete('/:phone/:name/deleteURL/:url', deleteURLOpts)
     //////////////////////////////////////////////////////////////////////
 
-    fastify.post('/:phone/history/before', datebeforeOpts)
-    fastify.post('/:phone/history/after', dateafterOpts)
-    fastify.post('/:phone/history/same', datesameOpts)
+    fastify.post('/:phone/history', dateOpts)
 
     done()
 }
